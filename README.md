@@ -1,93 +1,132 @@
-# ero2
+# Évaluation en situation : Analyse de la Moulinette
 
+## Contexte
 
+Cette section regroupe les éléments nécessaires pour effectuer l'évaluation sommative du cours. Il s'agit d'un nanoprojet à réaliser en groupe (4 à 6 étudiants). L'objectif pour l'équipe enseignante est de recueillir des informations utiles quant à vos compétences dans le traitement de sujets ouverts.
 
-## Getting started
+## Parti Pris
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Dans la démarche proposée, nous cherchons à analyser le comportement d'un système d'attente via deux perspectives complémentaires :
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+1. **La compréhension des modèles théoriques simples.**
+2. **La simulation maîtrisée de systèmes plus complexes.**
 
-## Add your files
+Ces deux perspectives sont reliées : la première est nécessaire pour réaliser la simulation des composants de la seconde, et la seconde est utile pour étudier les comportements pathologiques de tous les modèles, y compris les plus simples.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Énoncé de la SAÉ
 
-```
-cd existing_repo
-git remote add origin https://gitlab.cri.epita.fr/lucas.duport/ero2.git
-git branch -M main
-git push -uf origin main
-```
+On propose, dans cette activité, de s’attarder sur l’infrastructure de correction automatique de l’École, **la moulinette**. Notre objectif est d’en effectuer une analyse sous l’angle des systèmes d’attente.
+Les éléments présentés constituent une simplification de la réalité, mais les questionnements relèvent de considérations réelles ayant été au cœur de son développement.
 
-## Integrate with your tools
+**Qu'est-ce qu'une moulinette ?**
+Une moulinette est une infrastructure logicielle qui permet l’exécution de tests unitaires sur un code fourni par un tiers. Ces tests décrivent les spécifications fonctionnelles et techniques attendues, et leur exécution fournit un retour sur la conformité du code.
 
-- [ ] [Set up project integrations](https://gitlab.cri.epita.fr/lucas.duport/ero2/-/settings/integrations)
+**Format du sujet**
+Le sujet ne s’articule pas comme une évaluation fermée classique. Il prend une forme descriptive proche des constats préliminaires d'une phase d'analyse. On attend de vous que vous proposiez une **modélisation du contexte**, en explicitant vos hypothèses.
 
-## Collaborate with your team
+## Terminologie
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Utilisateur
 
-## Test and Deploy
+Personne ayant accès à l’infrastructure dans le cadre d’une activité pédagogique. Actions possibles :
 
-Use the built-in continuous integration in GitLab.
+* **Pousser son code** : Mécanique standard de versionnage.
+* **Pousser un tag** : Déclenche l'exécution des test-suites associées pour obtenir un retour sur la conformité.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### Moulinette
 
-***
+Une moulinette est constituée de :
 
-# Editing this README
+* **Une test-suite** : Ensemble de tests unitaires (éventuellement stratifiés).
+* **Un niveau d’information de retour** : Erreur précise, aide spécifique, ou simple message de rejet.
+* **Des ressources** : Nombre de push tags autorisés (total, par heure, plages horaires).
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Workflow Nominal
 
-## Suggestions for a good README
+1. L'étudiant code (exercices, projet, TP) dans un repository git dédié (commits/pushs classiques).
+2. Lorsqu’un **tag réservé** est utilisé, une vérification est effectuée.
+3. Si valide, la test-suite est exécutée selon le schéma du système d’attente (immédiat, file d'attente, etc.).
+4. Le résultat est affiché à l’étudiant selon les contraintes définies.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Étude de Cas
 
-## Name
-Choose a self-explaining name for your project.
+L’étude implique des choix dépendants du contexte. Les cas suivants sont présentés par ordre croissant de complexité. Une analyse de comportement est attendue pour chacun.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### 1. Waterfall
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+**Modèle :**
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+1. Un *push tag* place le code dans une file d’attente FIFO infinie (K serveurs disponibles).
+2. Une fois exécuté, le résultat est placé dans une file d’attente FIFO infinie (1 serveur unique) pour l'envoi vers le front.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+**Votre tâche :**
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+1. **Modélisation et Simulation** : Proposez un système d’attente modélisant ce contexte. Simulez et analysez son comportement selon les paramètres.
+2. **Hypothèse de charge (Files finies)** : Avec beaucoup d'étudiants, les files infinies sont irréalistes. Soient $k_s$ et $k_f$ les tailles des files d’exécution et de renvoi.
+   * Si refus au push tag : Message d'erreur.
+   * Si refus au renvoi (seconde file) : Retour vide ("page blanche").
+   * *Analyse* : Discutez des proportions de refus selon les paramètres.
+3. **Back-up** : Un back-up des résultats est mis en place avant l'envoi vers la seconde file pour éviter la perte de données.
+   * *Questions* : Quel impact sur la proportion de pages blanches ? Quels problèmes peuvent surgir ? Avantages d'un back-up aléatoire vs systématique ?
+   * *Calcul* : Calculez le temps de séjour moyen et la variance empirique.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### 2. Channels and Dams
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+**Observation :** Disparités de temps d'attente. Ex: Population ING (arrivées fréquentes) vs Population PREPA (rendus rares mais longs).
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+**Votre tâche :**
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+1. **Simulation** : Simulez les variations de temps de séjour par population décrites.
+2. **Régulation** : Introduction d'un blocage de la moulinette pour la population ING pendant un temps $t_b$, puis ouverture pour $t_b/2$, etc.
+   * *Comparaison* : Comparez ce modèle avec le précédent (temps de séjour).
+   * *Optimisation* : Proposez un autre système d’attente pour minimiser le temps de séjour moyen pour les deux populations.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Livrables et Modalités
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+**Travail de groupe** : 4 à 6 étudiants.
+**Livrables attendus** :
 
-## License
-For open source projects, say how it is licensed.
+* Code de simulation.
+* Analyse du comportement pour chaque cas :
+  * (a) Paramètres en jeu.
+  * (b) Comportement et stabilité.
+  * (c) Évaluation (métriques standard : nombre d’agents, temps de séjour, taux de blocage...).
+  * (d) Synthèse et recommandations (plages de paramètres, analyse des risques UX).
+* Résultats bruts des simulations.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+**Important** : Vos arguments doivent être étayés par des éléments factuels et un benchmarking statistique. Une occurrence unique ne suffit pas.
+
+**Suivi** : Évaluations formatives, séance de coaching (30 min), soutenance (15 min + questions).
+
+---
+
+## Évaluation par Compétences
+
+Le projet est évalué selon le référentiel de compétences de la formation ingénieur (RC@EPITA).
+**Compétence cible** : *Concevoir des solutions répondant à des besoins et des problèmes complexes*.
+**Niveau visé (Expert)** : *Installer une solution dans son écosystème et dans le temps*.
+
+L'évaluation se fera lors de la soutenance et via le rapport, sur la base de la grille critériée suivante :
+
+### 1. Installer une démarche itérative de conception (Métriques)
+
+*Objectif : S'appuyer sur des métriques prédéfinies pour guider la conception.*
+
+* **Attendu** : Métriques qualifiées et priorisées. Alignement de l'historique des itérations sur ces métriques. Comparatif des solutions isolées au regard de métriques explicites.
+* **Dépasse les attentes** : Contextualisation des métriques au regard des différents acteurs. Préconisations appuyées par une variété de simulations quantifiables. Prise en compte des risques encourus.
+
+### 2. Analyser les limites et émettre des recommandations (Validité)
+
+*Objectif : Améliorer le comportement et le périmètre de validité de la solution.*
+
+* **Attendu** : Démarche systémique de tests du périmètre de validité. Qualification du comportement de la solution au sein de ce périmètre, au regard de comportements théoriques standards.
+* **Dépasse les attentes** : Benchmark versionné comprenant une identification du périmètre de validité. Qualification du comportement (comparaison aux modèles théoriques). Consolidation des résultats par une analyse statistique des métriques en sortie.
+
+### 3. Intégrer des facteurs externes (Humains, Organisationnels)
+
+*Objectif : Formuler une solution tenant compte de son environnement.*
+
+* **Attendu** : Qualification des facteurs externes et analyse des enjeux de la solution pour chacun. Identification des contraintes humaines et organisationnelles.
+* **Dépasse les attentes** : Qualification de l'impact de la solution. Test contre des scénarios distincts en s'appuyant sur une étude de terrain ou des interviews.
+
+**Note** : Les soutenances auront lieu entre le 15/01/2025 et le 19/02/2025.
