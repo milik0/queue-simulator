@@ -1,0 +1,2 @@
+model,lambda,mu,num_servers,queue_capacity,simulation_time,utilization,mean_sojourn_time,std_sojourn_time,p95_sojourn_time,mean_waiting_time,mean_queue_length,max_queue_length,rejection_rate,total_completed,total_rejected
+M/M/1/K,0.8,1.0,1,15,2700.0,0.7770370370370371,3.6820225653015606,3.127557195826588,9.73830488664796,2.7082647859462785,2.183333333333333,14,0.003227293683725219,2162,7

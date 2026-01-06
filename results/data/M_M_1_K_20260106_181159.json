@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "model": "M/M/1/K",
+    "exported_at": "2026-01-06T18:11:59.196694",
+    "simulation_time": 2700.0
+  },
+  "parameters": {
+    "lambda": 0.8,
+    "mu": 1.0,
+    "num_servers": 1,
+    "queue_capacity": 15
+  },
+  "metrics": {
+    "utilization": 0.7770370370370371,
+    "mean_sojourn_time": 3.6820225653015606,
+    "std_sojourn_time": 3.127557195826588,
+    "median_sojourn_time": 2.8791240778191423,
+    "p95_sojourn_time": 9.73830488664796,
+    "p99_sojourn_time": 13.733748640658813,
+    "mean_waiting_time": 2.7082647859462785,
+    "mean_queue_length": 2.183333333333333,
+    "max_queue_length": 14,
+    "rejection_rate": 0.003227293683725219,
+    "total_arrivals": 2169,
+    "total_completed": 2162,
+    "total_rejected": 7
+  },
+  "population_metrics": {
+    "ING": {
+      "count": 2162,
+      "mean_sojourn_time": 3.6820225653015606,
+      "std_sojourn_time": 3.127557195826588,
+      "p95_sojourn_time": 9.73830488664796,
+      "mean_waiting_time": 2.7082647859462785
+    }
+  },
+  "theoretical": {}
+}
