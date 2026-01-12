@@ -37,7 +37,7 @@ uv run sim dashboard
 
 # Generate tables for report
 uv run sim baseline-report
-uv run sum waterfall-report
+uv run sim waterfall-report
 ```
 
 ## 📊 Available Models
