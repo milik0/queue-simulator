@@ -17,6 +17,7 @@ dependencies = [
     "pytest>=7.4.0",
     "jupyter>=1.0.0",
     "ipykernel>=7.1.0",
+    "pymupdf>=1.26.7",
 ]
 
 [project.scripts]

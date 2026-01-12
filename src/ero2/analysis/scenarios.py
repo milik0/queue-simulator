@@ -163,6 +163,30 @@ def run_scenario(
         results["simulated"] = sim_results.base_results.to_dict()
         results["page_blanche_rate"] = sim_results.page_blanche_rate
         results["exec_rejection_rate"] = sim_results.exec_rejection_rate
+
+    elif model == "channels":
+        # Heuristic mapping: Split arrival rate, vary service rates
+        c_config = ChannelsConfig(
+            standard_arrival_rate=config.arrival_rate * 0.8,
+            standard_service_rate=config.service_rate, # Fast
+            complex_arrival_rate=config.arrival_rate * 0.2,
+            complex_service_rate=config.service_rate * 0.2, # Slow (5x slower)
+            num_servers=config.num_servers,
+            queue_capacity=config.queue_capacity,
+            regulation=RegulationPolicy.NONE,
+            simulation_time=config.duration,
+            warmup_time=config.duration * 0.1,
+            seed=42
+        )
+        sim = ChannelsSimulation(c_config)
+        sim_results = sim.run(verbose=verbose)
+        
+        results["simulated"] = sim_results.base_results.to_dict()
+        results["details"] = {
+            "standard_mean": sim_results.standard_mean_sojourn,
+            "complex_mean": sim_results.complex_mean_sojourn,
+            "ratio": sim_results.sojourn_ratio
+        }
     
     return results
 

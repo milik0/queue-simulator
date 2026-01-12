@@ -160,7 +160,7 @@ def channels(
     """
     Exécuter le modèle Channels & Dams.
     
-    Simule les populations hétérogènes ING vs PREPA.
+    Simule les populations hétérogènes STANDARD vs COMPLEX.
     """
     from .models.channels import run_channels, compare_regulations
     
@@ -174,15 +174,15 @@ def channels(
         
         table = Table(title="Comparaison des Régulations")
         table.add_column("Politique", style="cyan")
-        table.add_column("ING (W)", style="blue")
-        table.add_column("PREPA (W)", style="yellow")
+        table.add_column("STANDARD (W)", style="blue")
+        table.add_column("COMPLEX (W)", style="yellow")
         table.add_column("Ratio", style="magenta")
         
         for policy, metrics in results.items():
             table.add_row(
                 policy,
-                f"{metrics['ing_mean']:.2f}",
-                f"{metrics['prepa_mean']:.2f}",
+                f"{metrics['standard_mean']:.2f}",
+                f"{metrics['complex_mean']:.2f}",
                 f"{metrics['ratio_mean']:.2f}"
             )
         
@@ -202,13 +202,13 @@ def channels(
         table.add_column("Temps séjour (W)", style="green")
         table.add_column("P95", style="yellow")
         
-        table.add_row("ING", str(results.ing_count), 
-                      f"{results.ing_mean_sojourn:.2f}", f"{results.ing_p95_sojourn:.2f}")
-        table.add_row("PREPA", str(results.prepa_count),
-                      f"{results.prepa_mean_sojourn:.2f}", f"{results.prepa_p95_sojourn:.2f}")
+        table.add_row("STANDARD", str(results.standard_count), 
+                      f"{results.standard_mean_sojourn:.2f}", f"{results.standard_p95_sojourn:.2f}")
+        table.add_row("COMPLEX", str(results.complex_count),
+                      f"{results.complex_mean_sojourn:.2f}", f"{results.complex_p95_sojourn:.2f}")
         
         console.print(table)
-        rprint(f"\n[dim]Ratio ING/PREPA: {results.sojourn_ratio:.2f}[/dim]")
+        rprint(f"\n[dim]Ratio STANDARD/COMPLEX: {results.sojourn_ratio:.2f}[/dim]")
     
     rprint("\n[green]✓ Simulation Channels terminée[/green]")
 
@@ -472,5 +472,142 @@ def info():
     ))
 
 
-if __name__ == "__main__":
-    app()
+@app.command()
+def pipeline(
+    mode: str = typer.Option("archis", "--mode", "-m", help="Mode: params, archis, loads"),
+    target: str = typer.Option("baseline", "--target", "-t", help="Target model (for params/loads)"),
+    scenario: str = typer.Option("normal", "--scenario", "-s", help="Scenario (for archis)"),
+    param: str = typer.Option("arrival_rate", "--param", "-p", help="Parameter to sweep"),
+    min_val: float = typer.Option(0.1, "--min"),
+    max_val: float = typer.Option(1.0, "--max"),
+    steps: int = typer.Option(10, "--steps"),
+):
+    """
+    Run complex analysis pipelines.
+    
+    Modes:
+    - params: Sweep a parameter for one model.
+    - archis: Compare all architectures on a scenario.
+    - loads: Test "low", "normal", "high", "overload" on a model.
+    """
+    from .analysis.pipelines import (
+        run_parameter_comparison_pipeline,
+        run_architecture_comparison_pipeline,
+        run_load_scenarios_pipeline
+    )
+    import numpy as np
+    
+    if mode == "params":
+        # Construct range
+        val_range = list(np.linspace(min_val, max_val, steps))
+        # Default fixed params
+        fixed = {"duration": 5000}
+        
+        run_parameter_comparison_pipeline(target, param, val_range, fixed)
+        
+    elif mode == "archis":
+        run_architecture_comparison_pipeline(scenario)
+        
+    elif mode == "loads":
+        run_load_scenarios_pipeline(target)
+        
+    else:
+        rprint(f"[red]Unknown mode: {mode}[/red]")
+
+
+@app.command()
+def optimize(
+    rejection: float = typer.Option(0.01, "--target-rejection", "-r", help="Max rejection rate allowed"),
+    arrival_rate: float = typer.Option(0.8, "--lambda", "-l", help="Arrival rate (lambda)"),
+    exec_rate: float = typer.Option(0.25, "--mu1", help="Execution service rate per server (mu1)"),
+    return_rate: float = typer.Option(2.0, "--mu2", help="Return service rate (mu2)"),
+    server_cost: float = typer.Option(10.0, "--cost-server", "-c", help="Cost weight for one server"),
+    queue_cost: float = typer.Option(1.0, "--cost-queue", "-q", help="Cost weight for one queue slot"),
+):
+    """
+    Find optimal Waterfall configuration (K, ks, kf).
+    
+    Performs a Grid Search to justify hyperparameter choices based on 
+    stability constraints and resource costs.
+    """
+    from .analysis.optimization import run_hyperparameter_grid_search
+    
+    run_hyperparameter_grid_search(
+        arrival_rate=arrival_rate,
+        exec_service_rate=exec_rate,
+        return_service_rate=return_rate,
+        target_rejection=rejection,
+        server_cost_weight=server_cost,
+        queue_cost_weight=queue_cost
+    )
+
+
+@app.command()
+def waterfall_report(
+    K: int = typer.Option(4, "--servers", "-k", help="Number of Execution Servers"),
+    ks: int = typer.Option(10, "--exec-capacity", "-ks", help="Execution Queue Capacity"),
+    kf: int = typer.Option(5, "--return-capacity", "-kf", help="Return Queue Capacity"),
+    mu1: float = typer.Option(0.25, "--mu1", help="Service rate per execution server"),
+    mu2: float = typer.Option(2.0, "--mu2", help="Return service rate"),
+    backup: bool = typer.Option(False, "--backup/--no-backup", help="Enable/Disable backup"),
+    arrival: str = typer.Option("poisson", "--arrival", "-a", help="Arrival law: 'poisson' or 'deadline'"),
+):
+    """
+    Générer le tableau d'analyse de charge Waterfall.
+    
+    Permet d'auditer le comportement pour différentes charges (0.5, 0.7, 0.9, 1.1).
+    Possibilité de changer la loi d'arrivée avec:
+    - --arrival="deadline" : Montée en charge linéaire.
+    - --arrival="peak" : Pic d'activité gaussien au milieu de la simulation (x3).
+    """
+    from .analysis.pipelines import run_waterfall_report
+    run_waterfall_report(
+        K=K,
+        ks=ks,
+        kf=kf,
+        mu1_per_server=mu1,
+        mu2=mu2,
+        enable_backup=backup,
+        arrival_law=arrival
+    )
+
+
+@app.command()
+def baseline_report(
+    K: int = typer.Option(4, "--servers", "-k", help="Number of Execution Servers"),
+    lam: float = typer.Option(0.8, "--lambda", "-l", help="Arrival rate"),
+    mu: float = typer.Option(1.0, "--mu", "-m", help="Global Service Capacity"),
+):
+    """
+    Générer le rapport Baseline (Files Infinies).
+    
+    Architecture A : M/M/K avec files illimitées.
+    """
+    from .analysis.pipelines import run_baseline_report
+    run_baseline_report(K=K, lam=lam, mu=mu)
+
+
+@app.command()
+def visualize_arrivals(
+    lam: float = typer.Option(0.8, "--lambda", "-l", help="Base arrival rate"),
+    duration: float = typer.Option(10000, "--duration", "-d", help="Simulation duration"),
+):
+    """
+    Générer un graphique comparatif des lois d'arrivée (Poisson, Deadline, Peak).
+    
+    Permet de visualiser λ(t) pour comprendre les scénarios de stress.
+    """
+    from .visualization.static import plot_arrival_laws
+    
+    files = plot_arrival_laws(base_lambda=lam, duration=duration)
+    for f in files:
+        rprint(f"[green]Graphique généré :[/green] {f}")
+
+@app.command()
+def synthesis():
+    """
+    Générer la synthèse des gains incrémentaux (Baseline -> Files Finies -> Backup).
+    Produit le tableau récapitulatif des améliorations architecturales.
+    """
+    from .analysis.pipelines import run_incremental_gains_pipeline
+    run_incremental_gains_pipeline()

@@ -88,7 +88,8 @@ def set_theme(style: str = "default", context: str = "paper"):
     
     # Common settings
     plt.rcParams["font.family"] = "sans-serif"
-    plt.rcParams["font.sans-serif"] = ["Inter", "Helvetica", "Arial", "sans-serif"]
+    # Add DejaVu Sans for Linux compatibility
+    plt.rcParams["font.sans-serif"] = ["Inter", "Helvetica", "Arial", "DejaVu Sans", "sans-serif"]
     plt.rcParams["axes.spines.top"] = False
     plt.rcParams["axes.spines.right"] = False
     plt.rcParams["axes.grid"] = True
