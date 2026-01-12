@@ -1,5 +1,3 @@
-"""Arrival process generators for the simulation."""
-
 from typing import Callable, Optional, Generator
 from dataclasses import dataclass
 import numpy as np
@@ -67,19 +65,6 @@ class PoissonArrivals:
 
 
 class NonHomogeneousArrivals:
-    """
-    Non-homogeneous Poisson process with time-varying rate λ(t).
-    
-    Uses thinning algorithm for exact simulation.
-    Useful for modeling deadline-driven behavior where activity
-    increases towards the end of a period.
-    
-    Example λ(t) patterns:
-    - Constant: λ(t) = λ₀
-    - Linear increase: λ(t) = λ₀ + αt
-    - Peak pattern: λ(t) = λ₀ + A*exp(-(t-t_peak)²/σ²)
-    """
-    
     def __init__(
         self,
         env: simpy.Environment,

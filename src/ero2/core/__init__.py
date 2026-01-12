@@ -1,5 +1,3 @@
-"""Core components for queueing simulation."""
-
 from .job import Job, Population
 from .queue import Queue, Server
 from .arrivals import PoissonArrivals, NonHomogeneousArrivals, BatchArrivals

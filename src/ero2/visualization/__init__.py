@@ -1,5 +1,3 @@
-"""Visualization package for simulation results."""
-
 from .static import (
     plot_sojourn_distribution,
     plot_waiting_distribution,

@@ -1,12 +1,10 @@
 import itertools
-from typing import List, Dict, Any, Optional
 import pandas as pd
 from rich.table import Table
 from rich.console import Console
 from rich.panel import Panel
 
 from ..models.waterfall import WaterfallSimulation, WaterfallConfig
-from ..core.metrics import SimulationResults
 
 console = Console()
 
@@ -138,7 +136,7 @@ def _print_optimization_report(df, best, target_rejection):
     ))
     
     # Justification 1: Why K? (Fix best ks, kf, vary K)
-    console.print("\n[bold cyan]1. Justification du nombre de serveurs (K)[/bold cyan]")
+    console.print("\n[bold cyan]1. Justification of number of servers (K)[/bold cyan]")
     df_k = df[(df["ks"] == best["ks"]) & (df["kf"] == best["kf"])].sort_values("K")
     
     table_k = Table(show_header=True, header_style="bold magenta")
@@ -160,10 +158,10 @@ def _print_optimization_report(df, best, target_rejection):
             f"[{status_style}]{row['status']}[/{status_style}]"
         )
     console.print(table_k)
-    console.print(f"[italic]Analyis: K={int(best['K'])} est le minimum nécessaire pour passer sous {target_rejection:.0%} de rejet.[/italic]")
+    console.print(f"[italic]Analysis: K={int(best['K'])} is the minimum needed to stay under {target_rejection:.0%} rejection.[/italic]")
 
     # Justification 2: Why Exec Capacity? (Fix best K, kf, vary ks)
-    console.print("\n[bold cyan]2. Justification de la file d'exécution (ks)[/bold cyan]")
+    console.print("\n[bold cyan]2. Justification of execution queue (ks)[/bold cyan]")
     df_ks = df[(df["K"] == best["K"]) & (df["kf"] == best["kf"])].sort_values("ks")
     
     table_ks = Table(show_header=True, header_style="bold magenta")
@@ -183,10 +181,10 @@ def _print_optimization_report(df, best, target_rejection):
             style=style
         )
     console.print(table_ks)
-    console.print(f"[italic]Analyis: ks={int(best['ks'])} offre le meilleur compromis taille/rejet.[/italic]")
+    console.print(f"[italic]Analysis: ks={int(best['ks'])} offers the best size/rejection tradeoff.[/italic]")
     
     # Justification 3: Why Return Capacity? (Fix best K, best ks, vary kf)
-    console.print("\n[bold cyan]3. Justification de la file de renvoi (kf)[/bold cyan]")
+    console.print("\n[bold cyan]3. Justification of return queue (kf)[/bold cyan]")
     df_kf = df[(df["K"] == best["K"]) & (df["ks"] == best["ks"])].sort_values("kf")
     
     table_kf = Table(show_header=True, header_style="bold magenta")
@@ -204,4 +202,4 @@ def _print_optimization_report(df, best, target_rejection):
             style=style
         )
     console.print(table_kf)
-    console.print(f"[italic]Analyis: kf={int(best['kf'])} suffit pour minimiser les pages blanches sans sur-dimensionner.[/italic]")
+    console.print(f"[italic]Analysis: kf={int(best['kf'])} is sufficient to minimize page blanches without over-provisioning.[/italic]")

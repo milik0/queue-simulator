@@ -1,5 +1,3 @@
-"""Theme configuration for visualizations."""
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Dict, Any

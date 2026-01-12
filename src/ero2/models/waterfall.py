@@ -1,17 +1,3 @@
-"""
-Waterfall Model - Tandem Queue Simulation.
-
-This models the moulinette's two-stage processing:
-1. Execution stage: K servers process the submitted code
-2. Return stage: 1 server sends results back to students
-
-Key features:
-- Tandem (series) queues
-- Finite capacity at each stage
-- Backup system before return stage
-- Analysis of "page blanche" (empty result) phenomenon
-"""
-
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
 from enum import Enum

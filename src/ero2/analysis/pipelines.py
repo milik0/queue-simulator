@@ -1,12 +1,3 @@
-"""
-Pipelines for complex simulation workflows.
-
-Contains orchestration logic for:
-1. Parameter Comparisons
-2. Architecture Comparisons
-3. Scenario Stress Testing
-"""
-
 from typing import List, Dict, Any, Optional, Union
 import numpy as np
 import matplotlib.pyplot as plt
@@ -315,32 +306,13 @@ def run_load_scenarios_pipeline(
         try:
             if model == "baseline":
                 sim = MM1KSimulation(arrival_rate=lam, service_rate=1.0, capacity=20) 
-                # Note: Default MM1K is 1 server. We might need to adjust if we want multi-server baseline
-                # For strict MM1K, capacity is system size. 
-                # Let's stick to single server MM1K as defined in class or multi-server
-                # If model is baseline MM1K, it usually means 1 server.
-                # If we want comparable capacity to others (4 servers), we need M/M/c/K.
-                # But let's assume standard baseline is just 1 powerful server or adjust rates.
-                # To be fair, let's keep it simple: 
-                # If baseline is single server, "normal" load is lambda=0.8.
                 pass
         except:
             pass
     
-    # Actually, better to reuse the scenario run logic but with custom parameters
-    # But since the user asked for "different scenario of charges", I will create a custom loop
-    
     summary = []
     
     for load_name in loads:
-        # Define meaningful loads for a 1-server system (Baseline) or 4-server (others)
-        # Let's target the provided model.
-        
-        # Determine target lambda based on model capacity estimate
-        # Baseline (1 server, mu=1) -> cap=1.
-        # Waterfall (4 servers, mu=0.25) -> cap=1.
-        # So comparable.
-        
         if load_name == "low": lam = 0.3
         elif load_name == "normal": lam = 0.7
         elif load_name == "high": lam = 0.95
@@ -359,7 +331,6 @@ def run_load_scenarios_pipeline(
                 "Reject": res.rejection_rate
             })
             
-    # Plotting
     _plot_load_scenarios(summary, model, path)
 
 def _run_generic(model: str, lam: float) -> Optional[SimulationResults]:
@@ -451,8 +422,6 @@ def run_waterfall_report(
     table.add_column("Mean Wait", justify="right")
     
     for rho in loads:
-        # Assuming Global Service Rate = K * mu1
-        # So λ = rho * (K * mu1)
         global_capacity = K * mu1_per_server
         lam = rho * global_capacity 
         
@@ -522,18 +491,12 @@ def run_baseline_report(
     # Limitation: MM1KSimulation in this codebase seems designed as single server?
     # Let's check MM1KSimulation implementation in baseline.py
     
-    # Re-using Waterfall structure for K servers but with huge queues is safer
-    # to simulate "Infinite M/M/K", but Waterfall has 2 stages.
-    # The user request seems to imply a global system or just the exec part?
-    # "K=4 exec servers, 1 return server".
-    # So it is the Waterfall structure but with INFINITE queues.
-    
     config = WaterfallConfig(
         arrival_rate=lam,
         num_exec_servers=K,
-        exec_service_rate=mu,   # Treat mu as PER SERVER rate
-        exec_queue_capacity=999999, # Infinite
-        return_service_rate=mu * 8, # Return is usually much faster
+        exec_service_rate=mu,
+        exec_queue_capacity=999999,
+        return_service_rate=mu * 8,
         return_queue_capacity=999999,
         enable_backup=False,
         simulation_time=duration,
@@ -544,7 +507,6 @@ def run_baseline_report(
     res = sim.run(verbose=False)
     base = res.base_results
     
-    # Create Table
     table = Table(header_style="bold cyan")
     table.add_column("Metric")
     table.add_column("Value", justify="right")
@@ -579,13 +541,8 @@ def run_incremental_gains_pipeline(
         title="📈 Evolution Architecture"
     ))
     
-    # 1. Setup Common Parameters
-    # We want global rho = 0.9.
-    # Total Capacity = K * mu1
-    # lambda = 0.9 * Total Capacity
-    # Let's fix mu1 = 0.25 (Total Cap = 1.0) => lambda = 0.9
     mu1 = 0.34
-    mu2 = 1.0  # Fast return
+    mu2 = 1.0
     lam = rho * (K * mu1)
     duration = 10000
     
@@ -593,9 +550,9 @@ def run_incremental_gains_pipeline(
         arrival_rate=lam,
         num_exec_servers=K,
         exec_service_rate=mu1,
-        exec_queue_capacity=0, # Placeholder
+        exec_queue_capacity=0,
         return_service_rate=mu2,
-        return_queue_capacity=0, # Placeholder
+        return_queue_capacity=0,
         enable_backup=False,
         simulation_time=duration,
         seed=42

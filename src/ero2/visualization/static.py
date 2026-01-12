@@ -1,8 +1,3 @@
-"""Static visualization functions using Matplotlib and Seaborn.
-
-These generate publication-quality figures for reports and presentations.
-"""
-
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
 import numpy as np

@@ -1,20 +1,3 @@
-"""
-M/M/1/K Baseline Simulation Model.
-
-This is the foundational model for all comparisons.
-A single-server queue with finite capacity K.
-
-Key characteristics:
-- Poisson arrivals (rate λ)
-- Exponential service times (rate μ)
-- 1 server
-- Capacity K (jobs are rejected when K jobs in system)
-- FIFO discipline
-
-This model has analytical solutions, allowing us to validate
-the simulation against theory.
-"""
-
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
 import simpy

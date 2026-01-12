@@ -1,5 +1,3 @@
-"""Queue and Server components for the simulation."""
-
 from dataclasses import dataclass, field
 from typing import Optional, List, Callable
 from enum import Enum

@@ -1,12 +1,3 @@
-"""
-Persona-specific visualizations.
-
-Creates tailored dashboards for each stakeholder:
-- Robert (Student): Focus on waiting time and reliability
-- Valerie (Admin): Focus on SLAs and costs
-- Alex (Tech): Focus on system metrics and configuration
-"""
-
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 import numpy as np

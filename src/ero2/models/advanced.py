@@ -1,12 +1,3 @@
-"""
-Advanced simulation models.
-
-Features:
-- Non-homogeneous Poisson process λ(t)
-- Batch arrivals
-- Daily patterns based on real data
-"""
-
 from typing import Optional, Dict, Any, List, Callable
 from dataclasses import dataclass
 import simpy

@@ -1,7 +1,3 @@
-"""
-ERO2 Command Line Interface.
-"""
-
 import typer
 from typing import Optional
 from pathlib import Path

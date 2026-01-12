@@ -1,10 +1,3 @@
-"""
-Data Loader - Load and analyze real submission data from the Forge.
-
-This module loads the submissions.csv file and computes real-world parameters
-for calibrating the simulation models.
-"""
-
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -134,29 +127,29 @@ def get_real_parameters(csv_path: Optional[str] = None) -> Tuple[float, float, R
 def print_stats(stats: RealDataStats):
     """Pretty print statistics."""
     print("=" * 60)
-    print("STATISTIQUES DONNÉES RÉELLES (Forge EPITA)")
+    print("REAL DATA STATISTICS (Forge EPITA)")
     print("=" * 60)
-    print(f"Période: {stats.start_date[:10]} → {stats.end_date[:10]}")
-    print(f"Durée: {stats.duration_hours:.1f} heures")
+    print(f"Period: {stats.start_date[:10]} -> {stats.end_date[:10]}")
+    print(f"Duration: {stats.duration_hours:.1f} hours")
     print(f"")
-    print(f"Soumissions totales: {stats.total_submissions:,}")
-    print(f"Étudiants uniques: {stats.unique_students}")
+    print(f"Total submissions: {stats.total_submissions:,}")
+    print(f"Unique students: {stats.unique_students}")
     print(f"")
-    print("--- Temps de service ---")
-    print(f"Moyenne: {stats.mean_service_time:.1f}s ({stats.mean_service_time/60:.1f} min)")
-    print(f"Médiane: {stats.median_service_time:.1f}s ({stats.median_service_time/60:.1f} min)")
-    print(f"Écart-type: {stats.std_service_time:.1f}s")
+    print("--- Service time ---")
+    print(f"Mean: {stats.mean_service_time:.1f}s ({stats.mean_service_time/60:.1f} min)")
+    print(f"Median: {stats.median_service_time:.1f}s ({stats.median_service_time/60:.1f} min)")
+    print(f"Std dev: {stats.std_service_time:.1f}s")
     print(f"P95: {stats.p95_service_time:.1f}s ({stats.p95_service_time/60:.1f} min)")
     print(f"")
-    print("--- Taux ---")
-    print(f"λ (arrivées): {stats.lambda_per_minute:.3f}/min ({stats.lambda_per_hour:.1f}/h)")
-    print(f"μ (service): {stats.mu_per_minute:.5f}/min")
-    print(f"ρ (K=4): {stats.compute_rho(4):.2f}")
+    print("--- Rates ---")
+    print(f"Lambda (arrivals): {stats.lambda_per_minute:.3f}/min ({stats.lambda_per_hour:.1f}/h)")
+    print(f"Mu (service): {stats.mu_per_minute:.5f}/min")
+    print(f"Rho (K=4): {stats.compute_rho(4):.2f}")
     print(f"")
-    print("--- Heures de pic ---")
+    print("--- Peak hours ---")
     sorted_hours = sorted(stats.peak_hours.items(), key=lambda x: -x[1])[:5]
     for hour, count in sorted_hours:
-        print(f"  {hour:02d}h: {count} soumissions")
+        print(f"  {hour:02d}h: {count} submissions")
 
 
 if __name__ == "__main__":

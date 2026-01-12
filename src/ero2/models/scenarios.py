@@ -1,16 +1,3 @@
-"""
-Scenarios Model - ING1 Atelier vs Projet Simulations.
-
-This models the moulinette with two distinct ING1 scenarios:
-- ATELIER: TP period with many students (800), frequent small submissions
-- PROJET: Project period with groups, weekly submissions, heavy testsuites
-
-Key features:
-- Different arrival rates and service times per scenario  
-- Peak hour simulation (20h-21h for Atelier, Saturday evening for Projet)
-- Focus on ING1 satisfaction metrics
-"""
-
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
 from enum import Enum

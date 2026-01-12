@@ -1,11 +1,3 @@
-"""Theoretical formulas for queueing models.
-
-This module contains analytical formulas for standard queueing models.
-Used for validating simulations against known theoretical results.
-
-Reference: Probability, Statistics, and Queueing Theory (Arnold O. Allen)
-"""
-
 from dataclasses import dataclass
 from typing import Dict, Any
 import numpy as np
@@ -38,24 +30,6 @@ class TheoreticalMetrics:
 
 
 def mm1_metrics(lambda_: float, mu: float) -> TheoreticalMetrics:
-    """
-    Calculate theoretical metrics for M/M/1 queue.
-    
-    Args:
-        lambda_: Arrival rate
-        mu: Service rate
-    
-    Returns:
-        TheoreticalMetrics with all standard measures
-    
-    Formulas:
-        ρ = λ/μ (must be < 1 for stability)
-        L = ρ/(1-ρ)
-        Lq = ρ²/(1-ρ)
-        W = 1/(μ-λ)
-        Wq = ρ/(μ-λ)
-        P₀ = 1 - ρ
-    """
     rho = lambda_ / mu
     
     if rho >= 1:
@@ -88,22 +62,6 @@ def mm1_metrics(lambda_: float, mu: float) -> TheoreticalMetrics:
 
 
 def mm1k_metrics(lambda_: float, mu: float, K: int) -> TheoreticalMetrics:
-    """
-    Calculate theoretical metrics for M/M/1/K queue (finite capacity).
-    
-    Args:
-        lambda_: Arrival rate
-        mu: Service rate
-        K: System capacity (queue + server)
-    
-    Returns:
-        TheoreticalMetrics including blocking probability
-    
-    Key formulas for ρ ≠ 1:
-        P_n = (1-ρ)ρⁿ / (1-ρ^(K+1))  for n = 0,1,...,K
-        P_K = blocking probability
-        L = ρ(1-(K+1)ρᴷ+Kρᴷ⁺¹) / ((1-ρ)(1-ρᴷ⁺¹))
-    """
     rho = lambda_ / mu
     
     if abs(rho - 1.0) < 1e-10:
@@ -148,17 +106,6 @@ def mm1k_metrics(lambda_: float, mu: float, K: int) -> TheoreticalMetrics:
 
 
 def erlang_c(lambda_: float, mu: float, k: int) -> float:
-    """
-    Calculate Erlang-C formula (probability of queueing in M/M/k).
-    
-    Args:
-        lambda_: Arrival rate
-        mu: Service rate per server
-        k: Number of servers
-    
-    Returns:
-        Probability that an arriving customer must wait (queue not empty)
-    """
     rho = lambda_ / (k * mu)
     
     if rho >= 1:
@@ -180,17 +127,6 @@ def erlang_c(lambda_: float, mu: float, k: int) -> float:
 
 
 def mmk_metrics(lambda_: float, mu: float, k: int) -> TheoreticalMetrics:
-    """
-    Calculate theoretical metrics for M/M/k queue (k servers).
-    
-    Args:
-        lambda_: Arrival rate
-        mu: Service rate per server
-        k: Number of servers
-    
-    Returns:
-        TheoreticalMetrics for multi-server queue
-    """
     rho = lambda_ / (k * mu)  # Per-server utilization
     
     if rho >= 1:
@@ -241,22 +177,6 @@ def tandem_metrics(
     k1: int = 1,
     k2: int = 1
 ) -> Dict[str, TheoreticalMetrics]:
-    """
-    Calculate approximate metrics for tandem (series) queues.
-    
-    For M/M/k -> M/M/k tandem, uses Burke's theorem:
-    output of M/M/k is also Poisson with rate λ (if stable).
-    
-    Args:
-        lambda_: Arrival rate to first queue
-        mu1: Service rate of first stage
-        mu2: Service rate of second stage
-        k1: Number of servers in first stage
-        k2: Number of servers in second stage
-    
-    Returns:
-        Dictionary with metrics for each stage
-    """
     stage1 = mmk_metrics(lambda_, mu1, k1) if k1 > 1 else mm1_metrics(lambda_, mu1)
     stage2 = mmk_metrics(lambda_, mu2, k2) if k2 > 1 else mm1_metrics(lambda_, mu2)
     

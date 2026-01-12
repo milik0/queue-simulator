@@ -1,5 +1,3 @@
-"""Analysis package for theoretical comparisons and statistics."""
-
 from .theoretical import (
     mm1_metrics,
     mm1k_metrics,

@@ -1,8 +1,3 @@
-"""
-Real Data Simulation - Run simulations calibrated with real Forge data.
-
-This script loads real submission data and runs simulations with calibrated parameters.
-"""
 
 import sys
 from pathlib import Path
@@ -37,11 +32,11 @@ def run_real_data_analysis(csv_path: str = "submissions.csv"):
     mu_pm = stats.mu_per_minute
     
     K_required = int(np.ceil(lambda_pm / mu_pm)) + 1
-    print(f"\n🔧 Pour atteindre ρ < 1, il faut au minimum K = {K_required} serveurs")
+    print(f"\nTo achieve rho < 1, a minimum of K = {K_required} servers is required")
     
     # Simulate with realistic K
     print("\n" + "=" * 70)
-    print(f"SIMULATION WATERFALL AVEC K = {K_required} SERVEURS")
+    print(f"WATERFALL SIMULATION WITH K = {K_required} SERVERS")
     print("=" * 70)
     
     # Scale parameters for simulation (use per-minute rates)
@@ -49,13 +44,13 @@ def run_real_data_analysis(csv_path: str = "submissions.csv"):
     sim_lambda = lambda_pm  # arrivals per minute
     sim_mu = mu_pm          # service rate per minute
     
-    print(f"\nParamètres calibrés:")
-    print(f"  λ = {sim_lambda:.4f}/min")
-    print(f"  μ = {sim_mu:.5f}/min")
-    print(f"  ρ (K={K_required}) = {sim_lambda / (K_required * sim_mu):.2f}")
+    print(f"\nCalibrated parameters:")
+    print(f"  lambda = {sim_lambda:.4f}/min")
+    print(f"  mu = {sim_mu:.5f}/min")
+    print(f"  rho (K={K_required}) = {sim_lambda / (K_required * sim_mu):.2f}"  )
     
     # Run waterfall simulation
-    print("\n--- Sans backup ---")
+    print("\n--- Without backup ---")
     results_no_backup = run_waterfall(
         arrival_rate=sim_lambda,
         num_exec_servers=K_required,
@@ -68,7 +63,7 @@ def run_real_data_analysis(csv_path: str = "submissions.csv"):
         seed=42
     )
     
-    print("\n--- Avec backup systématique ---")
+    print("\n--- With systematic backup ---")
     results_with_backup = run_waterfall(
         arrival_rate=sim_lambda,
         num_exec_servers=K_required,
@@ -83,14 +78,14 @@ def run_real_data_analysis(csv_path: str = "submissions.csv"):
     
     # Summary
     print("\n" + "=" * 70)
-    print("SYNTHÈSE DES RÉSULTATS (calibrés sur données réelles)")
+    print("RESULTS SUMMARY (calibrated on real data)")
     print("=" * 70)
-    print(f"\nAvec K = {K_required} serveurs:")
-    print(f"  Sans backup:  Pages blanches = {results_no_backup.page_blanche_rate:.2%}")
-    print(f"  Avec backup:  Pages blanches = {results_with_backup.page_blanche_rate:.2%}")
+    print(f"\nWith K = {K_required} servers:")
+    print(f"  Without backup:  Page blanche rate = {results_no_backup.page_blanche_rate:.2%}")
+    print(f"  With backup:     Page blanche rate = {results_with_backup.page_blanche_rate:.2%}")
     
     improvement = 1 - (results_with_backup.page_blanche_rate / max(results_no_backup.page_blanche_rate, 0.001))
-    print(f"\n✅ Réduction des pages blanches: {improvement:.0%}")
+    print(f"\nPage blanche reduction: {improvement:.0%}")
     
     return stats, results_no_backup, results_with_backup
 
@@ -108,22 +103,22 @@ def plot_hourly_distribution(df, save_path: str = None):
         if bar.get_x() + bar.get_width()/2 in peak_hours:
             bar.set_color('coral')
     
-    ax.set_xlabel('Heure de la journée')
-    ax.set_ylabel('Nombre de soumissions')
-    ax.set_title('Distribution horaire des soumissions (données réelles Forge)')
+    ax.set_xlabel('Hour of day')
+    ax.set_ylabel('Number of submissions')
+    ax.set_title('Hourly distribution of submissions (real Forge data)')
     ax.set_xticks(range(24))
     ax.grid(axis='y', alpha=0.3)
     
     # Add line for average
     avg = hourly.mean()
-    ax.axhline(y=avg, color='red', linestyle='--', label=f'Moyenne: {avg:.0f}')
+    ax.axhline(y=avg, color='red', linestyle='--', label=f'Mean: {avg:.0f}')
     ax.legend()
     
     plt.tight_layout()
     
     if save_path:
         plt.savefig(save_path, dpi=150)
-        print(f"Figure sauvegardée: {save_path}")
+        print(f"Figure saved: {save_path}")
     
     return fig
 
@@ -137,25 +132,25 @@ def plot_service_time_distribution(df, save_path: str = None):
     # Histogram
     axes[0].hist(service_times_min, bins=50, color='steelblue', edgecolor='black', alpha=0.7)
     axes[0].axvline(x=service_times_min.mean(), color='red', linestyle='--', 
-                   label=f'Moyenne: {service_times_min.mean():.1f} min')
+                   label=f'Mean: {service_times_min.mean():.1f} min')
     axes[0].axvline(x=service_times_min.median(), color='green', linestyle='--',
-                   label=f'Médiane: {service_times_min.median():.1f} min')
-    axes[0].set_xlabel('Temps de service (minutes)')
-    axes[0].set_ylabel('Fréquence')
-    axes[0].set_title('Distribution des temps de service')
+                   label=f'Median: {service_times_min.median():.1f} min')
+    axes[0].set_xlabel('Service time (minutes)')
+    axes[0].set_ylabel('Frequency')
+    axes[0].set_title('Service time distribution')
     axes[0].legend()
     
     # Box plot
     axes[1].boxplot(service_times_min, vert=True)
-    axes[1].set_ylabel('Temps de service (minutes)')
-    axes[1].set_title('Boîte à moustaches')
+    axes[1].set_ylabel('Service time (minutes)')
+    axes[1].set_title('Box plot')
     axes[1].grid(axis='y', alpha=0.3)
     
     plt.tight_layout()
     
     if save_path:
         plt.savefig(save_path, dpi=150)
-        print(f"Figure sauvegardée: {save_path}")
+        print(f"Figure saved: {save_path}")
     
     return fig
 
@@ -167,10 +162,10 @@ if __name__ == "__main__":
     stats, r_no_backup, r_backup = run_real_data_analysis(csv_path)
     
     # Generate plots
-    print("\n📊 Génération des graphiques...")
+    print("\nGenerating plots...")
     df = load_submissions(csv_path)
     
     plot_hourly_distribution(df, "results/figures/hourly_distribution.png")
     plot_service_time_distribution(df, "results/figures/service_time_distribution.png")
     
-    print("\n✅ Analyse terminée!")
+    print("\nAnalysis complete!")

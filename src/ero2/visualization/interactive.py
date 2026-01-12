@@ -1,8 +1,3 @@
-"""Interactive visualizations using Plotly.
-
-Provides dashboards and explorable visualizations for real-time analysis.
-"""
-
 from typing import Dict, Any, Optional, List
 import numpy as np
 import plotly.graph_objects as go

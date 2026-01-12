@@ -1,5 +1,3 @@
-"""Metrics collection and aggregation for simulations."""
-
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
 import numpy as np

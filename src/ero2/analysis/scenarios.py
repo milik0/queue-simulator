@@ -1,13 +1,3 @@
-"""
-Scenario testing for simulation validation.
-
-Implements test scenarios from the TODO:
-- Normal day
-- Deadline (peak activity)
-- Exam (high priority)
-- Server failure
-"""
-
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 from enum import Enum
@@ -17,7 +7,7 @@ from ..core.arrivals import daily_pattern, deadline_peak
 from ..models.baseline import MM1KSimulation, MM1KConfig
 from ..models.waterfall import WaterfallSimulation, WaterfallConfig
 from ..models.channels import ChannelsSimulation, ChannelsConfig, RegulationPolicy
-from ..analysis.theoretical import mm1k_metrics
+from ..analysis.metrics import mm1k_metrics
 
 
 class Scenario(Enum):

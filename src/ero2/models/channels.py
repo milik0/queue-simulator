@@ -1,17 +1,3 @@
-"""
-Channels and Dams Model - Heterogeneous Populations.
-
-This models the moulinette with two distinct user populations:
-- STANDARD: Frequent arrivals, short jobs
-- COMPLEX: Rare arrivals, long jobs
-
-Key features:
-- Different arrival rates and service times per population
-- Blocking mechanism (Dam) to regulate STANDARD access
-- SJF and dedicated lanes optimization
-- Fairness analysis between populations
-"""
-
 from typing import Optional, Dict, Any, List, Tuple
 from dataclasses import dataclass
 from enum import Enum
