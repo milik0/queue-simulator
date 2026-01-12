@@ -67,8 +67,8 @@ uv run sim waterfall --exec-servers 4 --backup
 
 ### 3. Channels & Dams (Heterogeneous Populations)
 Models two distinct user populations:
-- **ING:** Frequent submissions, short jobs
-- **PREPA:** Rare submissions, long jobs
+- **STANDARD:** Frequent submissions, short jobs (e.g. ING)
+- **COMPLEX:** Rare submissions, long jobs (e.g. PREPA)
 
 ```bash
 # Compare all regulation policies
@@ -82,49 +82,64 @@ uv run sim channels --regulation sjf
 | Policy | Description |
 |--------|-------------|
 | `none` | FIFO, no regulation |
-| `dam` | Periodic blocking of ING submissions |
+| `dam` | Periodic blocking of STANDARD submissions |
 | `sjf` | Shortest Job First scheduling |
-| `dedicated` | Reserved servers for ING |
+| `dedicated` | Reserved servers for STANDARD |
 
 ---
 
-## 📈 Visualizations
+### 4. Analysis Pipelines
 
-All figures are saved to `results/figures/`:
-
-| File | Description |
-|------|-------------|
-| `baseline_sojourn_dist.png` | Sojourn time distribution with statistics |
-| `baseline_waiting_dist.png` | Waiting time distribution |
-| `baseline_queue_length.png` | Queue length evolution over time |
-| `baseline_utilization.png` | Server utilization timeline |
-| `baseline_validation.png` | Theory vs simulation comparison |
-
-### Interactive Dashboard
-```bash
-uv run sim dashboard
-```
-Opens a Plotly dashboard with gauges, distributions, and time series.
-
----
-
-## 🔧 Command Reference
+The `pipeline` command enables complex comparisons and sensitivity analyses.
 
 ```bash
-uv run sim --help              # Show all commands
-uv run sim info                # Project information
-uv run sim baseline --help     # Baseline options
-uv run sim waterfall --help    # Waterfall options
-uv run sim channels --help     # Channels options
+uv run sim pipeline [OPTIONS]
 ```
 
-### Common Options
+**Common Options:**
+- `--mode` / `-m`: Select analysis mode (`params`, `archis`, `loads`).
+- `--target` / `-t`: Select model (`baseline`, `waterfall`, `channels`, `advanced`).
+- `--scenario` / `-s`: Select workload scenario (`normal`, `deadline`, `exam`).
 
-| Option | Description |
-|--------|-------------|
-| `--lambda, -l` | Arrival rate (λ) |
-| `--mu, -m` | Service rate (μ) |
-| `--duration, -d` | Simulation duration |
-| `--seed, -s` | Random seed for reproducibility |
-| `--no-plots` | Disable visualization generation |
-| `--output, -o` | Output directory for figures |
+### Pipeline Modes Detail
+
+#### 1. `params` (Sensitivity Analysis)
+Vary one parameter to observe its impact on system performance.
+
+*   **Command**: `uv run sim pipeline --mode params [OPTIONS]`
+*   **Options**:
+    *   `--target`: Model to analyze.
+        *   `baseline`: Standard M/M/1/K.
+        *   `waterfall`: Two-stage tandem queue.
+        *   `channels`: Heterogeneous populations (Standard/Complex).
+        *   `advanced`: Time-varying pattern (arrival_rate = peak rate).
+    *   `--param`: Parameter to sweep.
+        *   `arrival_rate`: Input traffic intensity ($\lambda$). Range: `> 0` (typically `0.1` to `1.0` for normalized load, or higher for raw rate).
+        *   `service_rate`: Processing speed ($\mu$). Range: `> 0` (typically `1.0`).
+        *   `capacity`: Max queue size ($K$). Range: `Integer > 0`.
+        *   `num_servers`: Number of active servers. Range: `Integer >= 1`.
+    *   `--min` / `--max`: Range of values to test.
+    *   `--steps`: Number of simulation points.
+
+#### 2. `archis` (Architecture Comparison)
+Benchmark all architectures against a specific workload scenario to identify the best design.
+
+*   **Command**: `uv run sim pipeline --mode archis [OPTIONS]`
+*   **Options**:
+    *   `--scenario`: Predefined workload condition.
+        *   `normal`: Standard daily activity ($\lambda=0.5$).
+        *   `deadline`: High stress spike ($\lambda=0.8$).
+        *   `exam`: Sustained high load ($\lambda=0.95$), increased capacity requirements ($K=50$, $c=6$).
+        *   `failure`: Server outage event (1 server fails for 500 time units) during simulation.
+
+#### 3. `loads` (Load Testing)
+Evaluate robustness of a specific model by subjecting it to increasing traffic levels.
+
+*   **Command**: `uv run sim pipeline --mode loads [OPTIONS]`
+*   **Options**:
+    *   `--target`: Model to stress test.
+*   **Levels Tested**:
+    *   **Low**: $\rho \approx 0.25$ (Light usage)
+    *   **Normal**: $\rho \approx 0.60$ (Standard usage)
+    *   **High**: $\rho \approx 0.95$ (Near saturation)
+    *   **Overload**: $\rho > 1.0$ (System saturation)

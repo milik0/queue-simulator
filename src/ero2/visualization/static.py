@@ -519,3 +519,90 @@ def create_baseline_report(
     print(f"\n✅ Generated {len(generated)} baseline figures in {output_dir}/")
     
     return generated
+
+
+def plot_arrival_laws(
+    base_lambda: float = 5.0,
+    duration: float = 24.0,
+    output_dir: str = "results/figures/arrivals"
+) -> List[Path]:
+    """
+    Plot the different arrival rate functions lambda(t).
+    
+    Visualizes:
+    1. Poisson (Constant)
+    2. Deadline (Linear Increase)
+    3. Peak (Gaussian - Waterfall scenario)
+    """
+    path = ensure_output_dir(output_dir)
+    set_theme()
+    
+    # Constants for Waterfall / Peak scenario
+    PEAK_BASE = 5.0
+    PEAK_MAX = 40.0
+    PEAK_TIME = 22.0
+    PEAK_WIDTH = 2.0
+
+    # Auto-adjust duration if it seems to be the default CLI value (10000)
+    # matching the 22h peak scale for better visualization
+    if duration == 10000:
+        print(f"⚠️  Duration {duration} detected with daily peak at {PEAK_TIME}h.")
+        print("   -> Switching to duration=24.0 for clear visualization.")
+        duration = 24.0
+    
+    t = np.linspace(0, duration, 1000)
+    
+    # 1. Poisson (Constant)
+    y_poisson = np.full_like(t, base_lambda)
+    
+    # 2. Deadline (Waterfall "Combined Rate": Linear + Peak)
+    # Exact reproduction of waterfall.py 'deadline' logic:
+    # linear = 3.0 + 0.1*t
+    # peak = 30.0 * Gaussian(t, center=21, width=2)
+    linear_component = 3.0 + 0.1 * t
+    
+    deadline_peak_val = 30.0
+    deadline_peak_time = 22.0
+    deadline_peak_width = 1.0
+    
+    gauss_deadline = np.exp(-((t - deadline_peak_time)**2) / (2 * deadline_peak_width**2))
+    y_deadline = linear_component + (deadline_peak_val * gauss_deadline)
+    
+    # 3. Peak (Waterfall scenario: Gaussian at 22h)
+    gauss = np.exp(-((t - PEAK_TIME)**2) / (2 * PEAK_WIDTH**2))
+    y_peak = PEAK_BASE + (PEAK_MAX - PEAK_BASE) * gauss
+    
+    # Plot
+    fig, ax = plt.subplots(figsize=FIGURE_SIZES["wide"])
+    
+    ax.plot(t, y_poisson, label="Poisson (Uniforme)", color="gray", linestyle="--", linewidth=2)
+    ax.plot(t, y_deadline, label="Deadline (Linear + Peak)", color=COLORS["warning"], linewidth=2.5)
+    ax.plot(t, y_peak, label="Peak (Simple Gaussian)", color=COLORS["error"], linewidth=2.5)
+    
+    # Annotations
+    ax.annotate(f"λ={base_lambda}", xy=(0, base_lambda), xytext=(10, 5), textcoords='offset points', color='gray')
+    
+    # Annotate Deadline Max
+    deadline_max_idx = np.argmax(y_deadline)
+    deadline_max_val = y_deadline[deadline_max_idx]
+    deadline_max_t = t[deadline_max_idx]
+    ax.annotate(f"Max={deadline_max_val:.1f}", xy=(deadline_max_t, deadline_max_val), 
+                xytext=(-20, 10), textcoords='offset points', color=COLORS["warning"])
+
+    ax.annotate(f"Max={PEAK_MAX:.1f}", xy=(PEAK_TIME, PEAK_MAX), xytext=(20, 10), 
+                textcoords='offset points', ha='center', color=COLORS["error"])
+    
+    ax.set_xlabel("Temps de simulation (t)")
+    ax.set_ylabel("Taux d'arrivée λ(t)")
+    ax.set_title(f"Comparaison des lois d'arrivée (Base λ={base_lambda})")
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc="upper left")
+    
+    # Fill under curves for better visibility?
+    ax.fill_between(t, y_peak, PEAK_BASE, color=COLORS["error"], alpha=0.1)
+    
+    output_file = path / "arrival_laws_comparison.png"
+    fig.savefig(output_file, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    
+    return [output_file]
