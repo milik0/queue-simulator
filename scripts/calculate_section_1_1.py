@@ -12,7 +12,7 @@ from datetime import datetime
 import json
 
 # Chemins
-INPUT_FILE = Path(__file__).parent.parent / "submissions.csv"
+INPUT_FILE = Path(__file__).parent.parent / "data" / "submissions.csv"
 OUTPUT_FILE = Path(__file__).parent.parent / "results" / "section_1_1_stats.json"
 
 # Nombre de serveurs d'exécution

@@ -161,7 +161,7 @@ def plot_service_time_distribution(df, save_path: str = None):
 
 
 if __name__ == "__main__":
-    csv_path = sys.argv[1] if len(sys.argv) > 1 else "submissions.csv"
+    csv_path = sys.argv[1] if len(sys.argv) > 1 else Path("data" / "submissions.csv")
     
     # Run analysis
     stats, r_no_backup, r_backup = run_real_data_analysis(csv_path)

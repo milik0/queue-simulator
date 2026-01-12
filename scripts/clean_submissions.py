@@ -13,7 +13,7 @@ from pathlib import Path
 from datetime import timedelta
 
 # Chemins
-INPUT_FILE = Path(__file__).parent.parent / "submissions.csv"
+INPUT_FILE = Path(__file__).parent.parent / "data" / "submissions.csv"
 OUTPUT_FILE = Path(__file__).parent.parent / "submissions_cleaned.csv"
 
 # Noms des colonnes
