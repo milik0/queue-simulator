@@ -6,9 +6,18 @@ from typing import Optional
 
 
 class Population(Enum):
-    """Population type for heterogeneous arrivals."""
-    ING = "ING"
-    PREPA = "PREPA"
+    """
+    Scenario type for ING1 students.
+    
+    ATELIER: TP period - many students, frequent small submissions
+    PROJET: Project period - groups, less frequent but heavier testsuites
+    ING: ING students (frequent arrivals, short jobs) - for Channels & Dams
+    PREPA: PREPA students (rare arrivals, long jobs) - for Channels & Dams
+    """
+    ATELIER = "ATELIER"  # TP: high frequency, short jobs
+    PROJET = "PROJET"    # Project: low frequency, long testsuites
+    ING = "ING"          # ING population for Channels & Dams
+    PREPA = "PREPA"      # PREPA population for Channels & Dams
 
 
 class JobStatus(Enum):
@@ -29,7 +38,7 @@ class Job:
         id: Unique identifier for the job
         arrival_time: Time when the job entered the system
         service_time: Time required to process this job
-        population: ING or PREPA (for heterogeneous models)
+        population: ATELIER or PROJET scenario (different load profiles)
         
     Tracked timestamps:
         queue_entry_time: When the job entered the queue
@@ -40,7 +49,7 @@ class Job:
     id: int
     arrival_time: float
     service_time: float
-    population: Population = Population.ING
+    population: Population = Population.ATELIER
     
     # Tracking timestamps (set during simulation)
     queue_entry_time: Optional[float] = None

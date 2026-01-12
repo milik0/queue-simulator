@@ -2,13 +2,16 @@
 
 from .baseline import MM1KSimulation, run_baseline
 from .waterfall import WaterfallSimulation, run_waterfall
-from .channels import ChannelsSimulation, run_channels
+from .scenarios import ScenariosSimulation, run_atelier, run_projet, compare_scenarios
 
 __all__ = [
     "MM1KSimulation",
     "run_baseline",
     "WaterfallSimulation", 
     "run_waterfall",
-    "ChannelsSimulation",
-    "run_channels",
+    "ScenariosSimulation",
+    "run_atelier",
+    "run_projet",
+    "compare_scenarios",
 ]
+
