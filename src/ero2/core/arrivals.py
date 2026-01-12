@@ -25,7 +25,7 @@ class PoissonArrivals:
         env: simpy.Environment,
         arrival_rate: float,
         service_rate: float,
-        population: Population = Population.ING,
+        population: Population = Population.ATELIER,
         rng: Optional[np.random.Generator] = None
     ):
         self.env = env
@@ -85,7 +85,7 @@ class NonHomogeneousArrivals:
         rate_function: Callable[[float], float],
         max_rate: float,
         service_rate: float,
-        population: Population = Population.ING,
+        population: Population = Population.ATELIER,
         rng: Optional[np.random.Generator] = None
     ):
         """
@@ -150,7 +150,7 @@ class BatchArrivals:
         service_rate: float,
         batch_size_mean: float = 3.0,
         batch_size_max: int = 10,
-        population: Population = Population.ING,
+        population: Population = Population.ATELIER,
         rng: Optional[np.random.Generator] = None
     ):
         """

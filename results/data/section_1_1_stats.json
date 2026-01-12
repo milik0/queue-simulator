@@ -1,0 +1,17 @@
+{
+  "period_start": "01 Dec 2025",
+  "period_end": "11 Dec 2025",
+  "period_hours": 249,
+  "n_submissions": 20942,
+  "n_students": 544,
+  "lambda_per_min": 1.4,
+  "lambda_per_hour": 84.1,
+  "service_mean_sec": 175.6,
+  "service_mean_min": 2.9,
+  "service_median_min": 1.6,
+  "mu_per_min": 0.34,
+  "K_servers": 4,
+  "rho": 1.03,
+  "peak_hour": 22,
+  "peak_count": 2604
+}
