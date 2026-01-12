@@ -7,7 +7,7 @@ from ..core.arrivals import daily_pattern, deadline_peak
 from ..models.baseline import MM1KSimulation, MM1KConfig
 from ..models.waterfall import WaterfallSimulation, WaterfallConfig
 from ..models.channels import ChannelsSimulation, ChannelsConfig, RegulationPolicy
-from ..analysis.metrics import mm1k_metrics
+from ..analysis.theoretical import mm1k_metrics
 
 
 class Scenario(Enum):
