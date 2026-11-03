@@ -40,6 +40,8 @@ uv run sim baseline-report
 uv run sim waterfall-report
 ```
 
+> **Note on data:** the real-data analysis (`scripts/calculate_section_1_1.py`, `src/ero2/analysis/real_data_sim.py`) was calibrated on internal EPITA submission logs (`data/submissions.csv`), which are not included in this public repository. All synthetic simulations above run without it, and the resulting figures are available in `results/`.
+
 ## 📊 Available Models
 
 ### 1. Baseline M/M/1/K
